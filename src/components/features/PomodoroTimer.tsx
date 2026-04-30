@@ -1,17 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useAetherStore } from "@/store/useAetherStore";
-import { toast } from "sonner";
 
 type TimerMode = 'focus' | 'short' | 'long';
-
 const DURATIONS: Record<TimerMode, number> = { focus: 25 * 60, short: 5 * 60, long: 15 * 60 };
 const MODE_LABELS: Record<TimerMode, string> = { focus: 'Deep Focus', short: 'Short Rest', long: 'Long Rest' };
 const MODE_COLORS: Record<TimerMode, string> = { focus: '#fbbf24', short: '#22d3ee', long: '#a5b4fc' };
-
 const SIZE = 160;
 const R = 66;
 const CIRC = 2 * Math.PI * R;
-
 const fmt = (s: number) => `${Math.floor(s/60).toString().padStart(2,'0')}:${(s%60).toString().padStart(2,'0')}`;
 
 export default function PomodoroTimer() {
@@ -35,12 +31,16 @@ export default function PomodoroTimer() {
     stop();
     if (mode === 'focus') {
       completeFocusSession(focusDuration);
-      toast.success('🌟 Focus session complete! +50 XP', {
-        description: `${focusDuration} minutes of deep work. The Dragon grows stronger.`,
-        duration: 4000,
+      const el = document.createElement('div');
+      el.textContent = '🌟 Session complete! +50 XP';
+      Object.assign(el.style, {
+        position: 'fixed', bottom: '80px', left: '50%', transform: 'translateX(-50%)',
+        background: 'rgba(16,185,129,0.9)', color: 'white', padding: '10px 20px',
+        borderRadius: '12px', fontWeight: '700', fontSize: '14px', zIndex: '9999',
+        boxShadow: '0 0 20px rgba(16,185,129,0.4)',
       });
-    } else {
-      toast.success('✨ Rest complete! Time to forge again.', { duration: 3000 });
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
     }
   }, [mode, focusDuration, completeFocusSession, stop]);
 
@@ -69,69 +69,71 @@ export default function PomodoroTimer() {
   };
 
   return (
-    <div className="glass-bright rounded-2xl p-5 flex flex-col items-center gap-4 w-full">
+    <div className="glass-bright" style={{ borderRadius: 20, padding: 20, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16, width: '100%' }}>
       {/* Mode tabs */}
-      <div className="flex gap-1 w-full rounded-xl p-1" style={{ background: 'rgba(255,255,255,0.04)' }}>
+      <div style={{ display: 'flex', gap: 4, width: '100%', borderRadius: 12, padding: 4, background: 'rgba(255,255,255,0.04)' }}>
         {(Object.keys(MODE_LABELS) as TimerMode[]).map(m => (
           <button key={m} onClick={() => changeMode(m)}
-            className="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all duration-200"
             style={{
+              flex: 1, padding: '7px 0', fontSize: 11, fontWeight: 600, borderRadius: 8,
               background: mode === m ? `${MODE_COLORS[m]}22` : 'transparent',
-              color: mode === m ? MODE_COLORS[m] : 'rgba(255,255,255,0.4)',
+              color: mode === m ? MODE_COLORS[m] : 'rgba(255,255,255,0.38)',
               border: mode === m ? `1px solid ${MODE_COLORS[m]}44` : '1px solid transparent',
+              cursor: 'pointer', transition: 'all 0.2s',
             }}>
             {MODE_LABELS[m]}
           </button>
         ))}
       </div>
 
-      {/* Ring */}
-      <div className="relative" style={{ width: SIZE, height: SIZE }}>
-        <svg width={SIZE} height={SIZE} className="-rotate-90">
+      {/* Timer ring */}
+      <div style={{ position: 'relative', width: SIZE, height: SIZE }}>
+        <svg width={SIZE} height={SIZE} style={{ transform: 'rotate(-90deg)' }}>
           <circle cx={SIZE/2} cy={SIZE/2} r={R} fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="7" />
           <circle cx={SIZE/2} cy={SIZE/2} r={R} fill="none" stroke={color} strokeWidth="7" strokeLinecap="round"
             strokeDasharray={CIRC} strokeDashoffset={dashOffset}
-            style={{ transition: running ? 'stroke-dashoffset 1s linear' : 'stroke-dashoffset 0.3s ease', filter: `drop-shadow(0 0 8px ${color}88)` }} />
+            style={{ transition: running ? 'stroke-dashoffset 1s linear' : 'stroke-dashoffset 0.3s ease', filter: `drop-shadow(0 0 9px ${color}88)` }} />
         </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-0.5">
-          <div className="text-3xl font-bold" style={{ color, fontVariantNumeric: 'tabular-nums' }}>
-            {fmt(timeLeft)}
-          </div>
-          <div className="text-[10px] tracking-widest uppercase" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <div style={{
+          position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: 3,
+        }}>
+          <div style={{ fontSize: 30, fontWeight: 700, color, fontVariantNumeric: 'tabular-nums' }}>{fmt(timeLeft)}</div>
+          <div style={{ fontSize: 9, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.32)' }}>
             {running ? MODE_LABELS[mode] : timeLeft === 0 ? 'Complete' : 'Paused'}
           </div>
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex gap-3 w-full">
-        <button onClick={toggle}
-          className="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all duration-200"
-          style={{
-            background: running ? 'rgba(255,255,255,0.08)' : `linear-gradient(135deg, ${color}88, ${color}44)`,
-            color: running ? 'rgba(255,255,255,0.7)' : '#050810',
-            border: `1px solid ${color}44`,
-          }}>
+      <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+        <button onClick={toggle} style={{
+          flex: 1, padding: '11px 0', borderRadius: 12, fontWeight: 700, fontSize: 13, cursor: 'pointer',
+          background: running ? 'rgba(255,255,255,0.08)' : `linear-gradient(135deg,${color}99,${color}55)`,
+          color: running ? 'rgba(255,255,255,0.7)' : '#050810',
+          border: `1px solid ${color}44`, transition: 'all 0.2s',
+        }}>
           {running ? '⏸ Pause' : timeLeft === 0 ? '↺ Restart' : '▶ Start'}
         </button>
-        <button onClick={reset}
-          className="px-4 py-2.5 rounded-xl text-sm transition-all duration-200"
-          style={{ background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}>
-          ↺
-        </button>
+        <button onClick={reset} style={{
+          padding: '11px 16px', borderRadius: 12, fontSize: 16, cursor: 'pointer',
+          background: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.45)',
+          border: '1px solid rgba(255,255,255,0.08)', transition: 'all 0.2s',
+        }}>↺</button>
       </div>
 
+      {/* Duration slider (focus only) */}
       {mode === 'focus' && (
-        <div className="w-full">
-          <div className="flex justify-between text-[10px] mb-1" style={{ color: 'rgba(255,255,255,0.35)' }}>
+        <div style={{ width: '100%' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, marginBottom: 6, color: 'rgba(255,255,255,0.32)' }}>
             <span>Duration</span>
             <span style={{ color }}>{focusDuration} min</span>
           </div>
           <input type="range" min={5} max={90} step={5} value={focusDuration} disabled={running}
             onChange={e => { const v = Number(e.target.value); setFocusDuration(v); if (!running) setTimeLeft(v * 60); }}
-            className="w-full h-1 rounded-full appearance-none cursor-pointer"
             style={{
-              background: `linear-gradient(to right, ${color} ${((focusDuration - 5)/85)*100}%, rgba(255,255,255,0.1) 0%)`,
+              width: '100%', height: 4, borderRadius: 99, appearance: 'none', cursor: running ? 'not-allowed' : 'pointer',
+              background: `linear-gradient(to right, ${color} ${((focusDuration-5)/85)*100}%, rgba(255,255,255,0.1) 0%)`,
               opacity: running ? 0.4 : 1,
             }} />
         </div>

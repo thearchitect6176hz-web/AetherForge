@@ -4,41 +4,37 @@ export default function AuraHeader() {
   const { level, xp, streak, sessions } = useAetherStore();
 
   return (
-    <header className="relative z-20 flex items-center justify-between px-6 py-4">
-      <div className="flex items-center gap-3">
-        <div className="w-9 h-9 rounded-xl flex items-center justify-center text-xl"
-          style={{
-            background: 'linear-gradient(135deg, rgba(0,225,255,0.2), rgba(139,92,246,0.2))',
-            border: '1px solid rgba(0,225,255,0.25)',
-            boxShadow: '0 0 16px rgba(0,225,255,0.2)',
-          }}>
-          🔱
-        </div>
+    <header style={{ position: 'relative', zIndex: 20, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px 24px' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{
+          width: 38, height: 38, borderRadius: 10,
+          display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20,
+          background: 'linear-gradient(135deg, rgba(0,225,255,0.18), rgba(139,92,246,0.18))',
+          border: '1px solid rgba(0,225,255,0.22)',
+          boxShadow: '0 0 14px rgba(0,225,255,0.18)',
+        }}>🔱</div>
         <div>
-          <div className="text-lg font-bold gradient-text leading-none" style={{ fontFamily: 'Cinzel, serif' }}>
+          <div className="gradient-text" style={{ fontSize: 18, fontWeight: 700, fontFamily: 'Cinzel, serif', lineHeight: 1 }}>
             AetherForge
           </div>
-          <div className="text-[10px] tracking-widest uppercase leading-none mt-0.5" style={{ color: 'rgba(255,255,255,0.3)' }}>
+          <div style={{ fontSize: 9, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.28)', marginTop: 2 }}>
             Personal Mastery OS
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-2 flex-wrap justify-end">
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-          style={{ background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
-          <span className="text-sm">🔥</span>
-          <span className="text-xs font-bold" style={{ color: '#fbbf24' }}>{streak}d streak</span>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 99, background: 'rgba(251,191,36,0.08)', border: '1px solid rgba(251,191,36,0.2)' }}>
+          <span style={{ fontSize: 14 }}>🔥</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#fbbf24' }}>{streak}d</span>
         </div>
-        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-          style={{ background: 'rgba(0,225,255,0.08)', border: '1px solid rgba(0,225,255,0.2)' }}>
-          <span className="text-xs font-bold" style={{ color: '#00e1ff' }}>Lv.{level}</span>
-          <span className="text-[10px]" style={{ color: 'rgba(255,255,255,0.35)' }}>{xp.toLocaleString()} XP</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 99, background: 'rgba(0,225,255,0.08)', border: '1px solid rgba(0,225,255,0.2)' }}>
+          <span className="glow-cyan" style={{ fontSize: 12, fontWeight: 700, color: '#00e1ff' }}>Lv.{level}</span>
+          <span style={{ fontSize: 10, color: 'rgba(255,255,255,0.32)' }}>{xp.toLocaleString()} XP</span>
         </div>
-        <div className="items-center gap-1.5 px-3 py-1.5 rounded-full hidden sm:flex"
-          style={{ background: 'rgba(165,180,252,0.08)', border: '1px solid rgba(165,180,252,0.2)' }}>
-          <span className="text-sm">⚡</span>
-          <span className="text-xs font-bold" style={{ color: '#a5b4fc' }}>{sessions} sessions</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 12px', borderRadius: 99, background: 'rgba(165,180,252,0.08)', border: '1px solid rgba(165,180,252,0.2)' }}>
+          <span style={{ fontSize: 14 }}>⚡</span>
+          <span style={{ fontSize: 12, fontWeight: 700, color: '#a5b4fc' }}>{sessions}</span>
         </div>
       </div>
     </header>

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useAetherStore, ArchetypeKey } from "@/store/useAetherStore";
 import { ARCHETYPES, getArchetype } from "@/types/archetypes";
-import { toast } from "sonner";
 
 export default function TaskPanel() {
   const { tasks, addTask, toggleTask, deleteTask } = useAetherStore();
@@ -15,12 +14,9 @@ export default function TaskPanel() {
     addTask(text.trim(), archetype);
     setText("");
     setShowAdd(false);
-    toast.success(`Quest added to ${getArchetype(archetype).name}s domain`, { duration: 2000 });
   };
 
   const handleToggle = (id: string) => {
-    const task = tasks.find(t => t.id === id);
-    if (task && !task.done) toast.success("Task slain! +20 XP", { duration: 2000 });
     toggleTask(id);
   };
 
@@ -31,60 +27,64 @@ export default function TaskPanel() {
   const donePct = tasks.length > 0 ? (tasks.filter(t => t.done).length / tasks.length) * 100 : 0;
 
   return (
-    <div className="glass-bright rounded-2xl p-5 flex flex-col gap-4 w-full">
-      <div className="flex items-center justify-between">
+    <div className="glass-bright" style={{ borderRadius: 20, padding: 20, display: 'flex', flexDirection: 'column', gap: 14, width: '100%' }}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
-          <h3 className="text-sm font-bold" style={{ fontFamily: 'Cinzel, serif', color: 'rgba(255,255,255,0.9)' }}>
-            Quest Log
-          </h3>
-          <div className="text-[10px] mt-0.5" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <h3 style={{ fontFamily: 'Cinzel, serif', fontSize: 13, fontWeight: 700, color: 'rgba(255,255,255,0.9)' }}>Quest Log</h3>
+          <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.32)', marginTop: 2 }}>
             {tasks.filter(t => !t.done).length} active · {tasks.filter(t => t.done).length} slain
           </div>
         </div>
-        <button onClick={() => setShowAdd(v => !v)}
-          className="w-8 h-8 rounded-lg flex items-center justify-center text-lg transition-all duration-200"
-          style={{
-            background: showAdd ? 'rgba(0,225,255,0.15)' : 'rgba(255,255,255,0.07)',
-            border: `1px solid ${showAdd ? 'rgba(0,225,255,0.35)' : 'rgba(255,255,255,0.1)'}`,
-            color: showAdd ? '#00e1ff' : 'rgba(255,255,255,0.5)',
-          }}>
+        <button onClick={() => setShowAdd(v => !v)} style={{
+          width: 32, height: 32, borderRadius: 8, fontSize: 18, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          background: showAdd ? 'rgba(0,225,255,0.14)' : 'rgba(255,255,255,0.07)',
+          border: `1px solid ${showAdd ? 'rgba(0,225,255,0.32)' : 'rgba(255,255,255,0.1)'}`,
+          color: showAdd ? '#00e1ff' : 'rgba(255,255,255,0.5)',
+          transition: 'all 0.2s',
+        }}>
           {showAdd ? '−' : '+'}
         </button>
       </div>
 
-      <div className="w-full h-1 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.05)' }}>
-        <div className="h-full rounded-full transition-all duration-700"
-          style={{ width: `${donePct}%`, background: 'linear-gradient(90deg, #00e1ff, #8b5cf6)' }} />
+      {/* Progress bar */}
+      <div style={{ width: '100%', height: 4, borderRadius: 99, background: 'rgba(255,255,255,0.05)', overflow: 'hidden' }}>
+        <div style={{ height: '100%', borderRadius: 99, width: `${donePct}%`, background: 'linear-gradient(90deg,#00e1ff,#8b5cf6)', transition: 'width 0.6s ease' }} />
       </div>
 
+      {/* Add form */}
       {showAdd && (
-        <div className="rounded-xl p-3 flex flex-col gap-2"
-          style={{ background: 'rgba(0,225,255,0.04)', border: '1px solid rgba(0,225,255,0.12)' }}>
+        <div style={{ borderRadius: 12, padding: 12, background: 'rgba(0,225,255,0.04)', border: '1px solid rgba(0,225,255,0.12)', display: 'flex', flexDirection: 'column', gap: 10 }}>
           <input value={text} onChange={e => setText(e.target.value)}
             onKeyDown={e => e.key === 'Enter' && handleAdd()}
             placeholder="Describe your quest..."
-            className="w-full bg-transparent text-sm outline-none"
-            style={{ color: 'rgba(255,255,255,0.85)' }}
-            autoFocus />
-          <div className="flex gap-2 items-center">
-            <div className="flex gap-1 flex-1 flex-wrap">
+            autoFocus
+            style={{
+              width: '100%', background: 'transparent', border: 'none', outline: 'none',
+              fontSize: 13, color: 'rgba(255,255,255,0.85)',
+            }} />
+          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 4, flex: 1, flexWrap: 'wrap' }}>
               {ARCHETYPES.map(a => (
                 <button key={a.key} onClick={() => setArchetype(a.key)} title={a.name}
-                  className="w-6 h-6 rounded-full text-sm flex items-center justify-center transition-transform hover:scale-110"
                   style={{
+                    width: 24, height: 24, borderRadius: '50%', fontSize: 13,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
                     background: archetype === a.key ? `${a.color}33` : 'rgba(255,255,255,0.05)',
                     border: `1px solid ${archetype === a.key ? a.color : 'transparent'}`,
+                    cursor: 'pointer', transition: 'transform 0.15s',
                   }}>
                   {a.emoji}
                 </button>
               ))}
             </div>
             <button onClick={handleAdd} disabled={!text.trim()}
-              className="px-3 py-1 rounded-lg text-xs font-bold transition-all duration-200"
               style={{
+                padding: '5px 12px', borderRadius: 8, fontSize: 11, fontWeight: 700, cursor: text.trim() ? 'pointer' : 'default',
                 background: text.trim() ? 'rgba(0,225,255,0.2)' : 'rgba(255,255,255,0.05)',
                 color: text.trim() ? '#00e1ff' : 'rgba(255,255,255,0.3)',
-                border: `1px solid ${text.trim() ? 'rgba(0,225,255,0.3)' : 'transparent'}`,
+                border: `1px solid ${text.trim() ? 'rgba(0,225,255,0.28)' : 'transparent'}`,
               }}>
               Add
             </button>
@@ -92,23 +92,26 @@ export default function TaskPanel() {
         </div>
       )}
 
-      <div className="flex gap-1">
+      {/* Filter tabs */}
+      <div style={{ display: 'flex', gap: 4 }}>
         {(['active', 'all', 'done'] as const).map(f => (
           <button key={f} onClick={() => setFilter(f)}
-            className="px-2.5 py-1 text-[10px] font-semibold rounded-lg capitalize transition-all"
             style={{
+              padding: '4px 10px', fontSize: 10, fontWeight: 600, borderRadius: 8, textTransform: 'capitalize', cursor: 'pointer',
               background: filter === f ? 'rgba(0,225,255,0.12)' : 'rgba(255,255,255,0.04)',
-              color: filter === f ? '#00e1ff' : 'rgba(255,255,255,0.35)',
+              color: filter === f ? '#00e1ff' : 'rgba(255,255,255,0.32)',
               border: `1px solid ${filter === f ? 'rgba(0,225,255,0.2)' : 'transparent'}`,
+              transition: 'all 0.2s',
             }}>
             {f}
           </button>
         ))}
       </div>
 
-      <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-1">
+      {/* Task list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, maxHeight: 240, overflowY: 'auto', paddingRight: 2 }}>
         {filtered.length === 0 && (
-          <div className="text-center py-6 text-sm" style={{ color: 'rgba(255,255,255,0.25)' }}>
+          <div style={{ textAlign: 'center', padding: '24px 0', fontSize: 13, color: 'rgba(255,255,255,0.22)' }}>
             {filter === 'done' ? 'No slain quests yet' : 'Quest log is empty'}
           </div>
         )}
@@ -116,30 +119,34 @@ export default function TaskPanel() {
           const arch = getArchetype(task.archetype);
           return (
             <div key={task.id}
-              className="flex items-start gap-3 p-2.5 rounded-xl group transition-all duration-200"
               style={{
-                background: task.done ? 'rgba(255,255,255,0.02)' : `${arch.color}08`,
+                display: 'flex', alignItems: 'flex-start', gap: 10, padding: '9px 10px', borderRadius: 10,
+                background: task.done ? 'rgba(255,255,255,0.02)' : `${arch.color}09`,
                 border: `1px solid ${task.done ? 'rgba(255,255,255,0.05)' : arch.borderColor}`,
+                transition: 'all 0.2s',
               }}>
               <button onClick={() => handleToggle(task.id)}
-                className="mt-0.5 w-4 h-4 rounded-full flex-shrink-0 flex items-center justify-center transition-all duration-200"
                 style={{
+                  marginTop: 2, width: 16, height: 16, borderRadius: '50%', flexShrink: 0,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer',
                   border: `2px solid ${task.done ? arch.color : arch.borderColor}`,
                   background: task.done ? `${arch.color}33` : 'transparent',
+                  transition: 'all 0.2s',
                 }}>
                 {task.done && <span style={{ color: arch.color, fontSize: 8 }}>✓</span>}
               </button>
-              <span className="text-xs flex-1 leading-relaxed"
-                style={{
-                  color: task.done ? 'rgba(255,255,255,0.25)' : 'rgba(255,255,255,0.8)',
-                  textDecoration: task.done ? 'line-through' : 'none',
-                }}>
+              <span style={{
+                fontSize: 12, flex: 1, lineHeight: 1.5,
+                color: task.done ? 'rgba(255,255,255,0.22)' : 'rgba(255,255,255,0.82)',
+                textDecoration: task.done ? 'line-through' : 'none',
+              }}>
                 {task.text}
               </span>
-              <span className="text-sm flex-shrink-0 opacity-60" title={arch.name}>{arch.emoji}</span>
+              <span style={{ fontSize: 14, flexShrink: 0, opacity: 0.6 }}>{arch.emoji}</span>
               <button onClick={() => deleteTask(task.id)}
-                className="flex-shrink-0 opacity-0 group-hover:opacity-60 hover:opacity-100 transition-opacity text-xs"
-                style={{ color: 'rgba(255,100,100,0.8)' }}>
+                style={{ flexShrink: 0, background: 'none', border: 'none', cursor: 'pointer', fontSize: 11, color: 'rgba(255,100,100,0.7)', opacity: 0.5, transition: 'opacity 0.2s' }}
+                onMouseEnter={e => (e.currentTarget.style.opacity = '1')}
+                onMouseLeave={e => (e.currentTarget.style.opacity = '0.5')}>
                 ✕
               </button>
             </div>

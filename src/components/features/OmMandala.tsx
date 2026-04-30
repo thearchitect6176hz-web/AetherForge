@@ -3,61 +3,69 @@ import { useAetherStore } from "@/store/useAetherStore";
 export default function OmMandala() {
   const { level, xp } = useAetherStore();
   const intensity = Math.min(1, level / 20);
+  const SIZE = 190;
+  const cx = SIZE / 2;
 
   return (
-    <div className="relative flex items-center justify-center select-none" style={{ width: 200, height: 200 }}>
-      <div
-        className="absolute inset-0 rounded-full animate-rotate-slow"
-        style={{
-          border: `1px solid rgba(0,225,255,${0.15 + intensity * 0.25})`,
-          boxShadow: `0 0 ${20 + intensity * 30}px rgba(0,225,255,${0.1 + intensity * 0.2})`,
-        }}
-      />
-      <div
-        className="absolute rounded-full animate-rotate-reverse"
-        style={{ inset: 14, border: `1px dashed rgba(139,92,246,${0.2 + intensity * 0.3})` }}
-      />
-      <div
-        className="absolute rounded-full animate-rotate-slow"
-        style={{ inset: 28, border: `1px solid rgba(0,225,255,${0.12 + intensity * 0.2})`, animationDuration: '35s' }}
-      />
-      <div
-        className="absolute rounded-full animate-pulse-glow"
-        style={{
-          inset: 38,
-          background: `radial-gradient(circle, rgba(139,92,246,${0.15 + intensity * 0.2}), transparent 70%)`,
-        }}
-      />
-      <div className="relative z-10 flex flex-col items-center gap-1 animate-float">
-        <span className="text-5xl" style={{ filter: `drop-shadow(0 0 ${10 + intensity * 20}px rgba(165,180,252,0.9))` }}>
-          🕉️
-        </span>
-        <div className="text-center">
-          <div className="text-xs font-bold tracking-widest uppercase glow-cyan" style={{ color: '#00e1ff', fontFamily: 'Cinzel, serif' }}>
+    <div style={{ position: 'relative', width: SIZE, height: SIZE, display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none' }}>
+      {/* Outer ring */}
+      <div className="animate-rotate-slow" style={{
+        position: 'absolute', inset: 0, borderRadius: '50%',
+        border: `1px solid rgba(0,225,255,${0.14 + intensity * 0.22})`,
+        boxShadow: `0 0 ${20 + intensity * 28}px rgba(0,225,255,${0.08 + intensity * 0.18})`,
+      }} />
+      {/* Middle dashed ring */}
+      <div className="animate-rotate-reverse" style={{
+        position: 'absolute', inset: 14, borderRadius: '50%',
+        border: `1px dashed rgba(139,92,246,${0.18 + intensity * 0.28})`,
+      }} />
+      {/* Inner ring */}
+      <div className="animate-rotate-slow" style={{
+        position: 'absolute', inset: 30, borderRadius: '50%',
+        border: `1px solid rgba(0,225,255,${0.10 + intensity * 0.18})`,
+        animationDuration: '40s',
+      }} />
+      {/* Glow core */}
+      <div className="animate-pulse-glow" style={{
+        position: 'absolute', inset: 44, borderRadius: '50%',
+        background: `radial-gradient(circle, rgba(139,92,246,${0.14 + intensity * 0.18}), transparent 70%)`,
+      }} />
+
+      {/* Om symbol + level */}
+      <div className="animate-float" style={{ position: 'relative', zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
+        <span style={{ fontSize: 48, filter: `drop-shadow(0 0 ${10 + intensity * 18}px rgba(165,180,252,0.9))` }}>🕉️</span>
+        <div style={{ textAlign: 'center' }}>
+          <div className="glow-cyan" style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: '#00e1ff', fontFamily: 'Cinzel, serif' }}>
             Lv.{level}
           </div>
-          <div className="text-[10px] tracking-wider" style={{ color: 'rgba(255,255,255,0.35)' }}>
+          <div style={{ fontSize: 9, letterSpacing: '0.1em', color: 'rgba(255,255,255,0.3)' }}>
             {xp.toLocaleString()} XP
           </div>
         </div>
       </div>
+
+      {/* 8 dot markers around the outer edge */}
       {Array.from({ length: 8 }).map((_, i) => {
         const angle = (i / 8) * Math.PI * 2 - Math.PI / 2;
-        const r = 90;
-        const x = Math.cos(angle) * r + 100;
-        const y = Math.sin(angle) * r + 100;
+        const r = cx - 6;
+        const x = Math.cos(angle) * r + cx;
+        const y = Math.sin(angle) * r + cx;
         return (
-          <div key={i} className="absolute w-1.5 h-1.5 rounded-full" style={{
-            left: x - 3, top: y - 3,
-            background: i % 2 === 0 ? 'rgba(0,225,255,0.7)' : 'rgba(139,92,246,0.7)',
-            boxShadow: `0 0 6px ${i % 2 === 0 ? 'rgba(0,225,255,0.8)' : 'rgba(139,92,246,0.8)'}`,
+          <div key={i} style={{
+            position: 'absolute', width: 5, height: 5, borderRadius: '50%',
+            left: x - 2.5, top: y - 2.5,
+            background: i % 2 === 0 ? 'rgba(0,225,255,0.75)' : 'rgba(139,92,246,0.75)',
+            boxShadow: `0 0 5px ${i % 2 === 0 ? 'rgba(0,225,255,0.8)' : 'rgba(139,92,246,0.8)'}`,
           }} />
         );
       })}
-      <div className="absolute -top-7 left-1/2 -translate-x-1/2 text-xl animate-float"
-        style={{ filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.9))', animationDelay: '1s' }}>
-        🔱
-      </div>
+
+      {/* Trident above */}
+      <div className="animate-float" style={{
+        position: 'absolute', top: -28, left: '50%', transform: 'translateX(-50%)',
+        fontSize: 20, filter: 'drop-shadow(0 0 8px rgba(251,191,36,0.9))',
+        animationDelay: '1.2s',
+      }}>🔱</div>
     </div>
   );
 }

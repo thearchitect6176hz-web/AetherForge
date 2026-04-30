@@ -8,93 +8,122 @@ import StatsPanel from "@/components/features/StatsPanel";
 import ArchetypeModal from "@/components/features/ArchetypeModal";
 
 type Tab = 'sanctuary' | 'focus' | 'quests' | 'stats';
-const TABS = [
-  { id: 'sanctuary' as Tab, label: 'Sanctuary', emoji: '🕉️' },
-  { id: 'focus' as Tab, label: 'Focus', emoji: '🦁' },
-  { id: 'quests' as Tab, label: 'Quests', emoji: '⚔️' },
-  { id: 'stats' as Tab, label: 'Stats', emoji: '📊' },
+const TABS: { id: Tab; emoji: string; label: string }[] = [
+  { id: 'sanctuary', emoji: '🕉️', label: 'Sanctuary' },
+  { id: 'focus', emoji: '🦁', label: 'Focus' },
+  { id: 'quests', emoji: '⚔️', label: 'Quests' },
+  { id: 'stats', emoji: '📊', label: 'Stats' },
 ];
 
 export default function Index() {
   const [tab, setTab] = useState<Tab>('sanctuary');
 
   return (
-    <div className="relative min-h-screen w-full overflow-x-hidden cosmic-bg">
+    <div style={{ position: 'relative', minHeight: '100vh', width: '100%', overflowX: 'hidden' }} className="cosmic-bg">
       <CosmicBackground />
 
-      <div className="relative z-20">
+      {/* Header */}
+      <div style={{ position: 'relative', zIndex: 20 }}>
         <AuraHeader />
       </div>
 
-      {/* Mobile tab bar */}
-      <div className="sticky top-0 z-30 flex lg:hidden gap-1 px-4 py-2 mx-4 mb-2 rounded-2xl glass"
-        style={{ border: '1px solid rgba(255,255,255,0.06)' }}>
+      {/* Mobile tabs */}
+      <div className="glass" style={{
+        position: 'sticky', top: 0, zIndex: 30,
+        display: 'flex', gap: 4, margin: '0 16px 8px', padding: '6px',
+        borderRadius: 16,
+      }}>
         {TABS.map(t => (
           <button key={t.id} onClick={() => setTab(t.id)}
-            className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl text-xs font-semibold transition-all duration-200"
             style={{
+              flex: 1, padding: '8px 4px', borderRadius: 10, fontSize: 11, fontWeight: 600, cursor: 'pointer',
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 2,
               background: tab === t.id ? 'rgba(0,225,255,0.12)' : 'transparent',
-              color: tab === t.id ? '#00e1ff' : 'rgba(255,255,255,0.35)',
-              border: `1px solid ${tab === t.id ? 'rgba(0,225,255,0.2)' : 'transparent'}`,
+              color: tab === t.id ? '#00e1ff' : 'rgba(255,255,255,0.32)',
+              border: `1px solid ${tab === t.id ? 'rgba(0,225,255,0.22)' : 'transparent'}`,
+              transition: 'all 0.2s',
             }}>
-            <span>{t.emoji}</span>
-            <span className="hidden sm:inline">{t.label}</span>
+            <span style={{ fontSize: 16 }}>{t.emoji}</span>
+            <span style={{ fontSize: 9, letterSpacing: '0.06em' }}>{t.label}</span>
           </button>
         ))}
       </div>
 
-      {/* Desktop layout */}
-      <div className="hidden lg:flex relative z-10 px-6 pb-8 gap-6 items-start">
-        <div className="flex flex-col gap-4 w-80 flex-shrink-0 pt-2">
+      {/* Desktop layout (lg+) */}
+      <div style={{ display: 'none' }} className="lg:flex" >
+        {/* lg flex override via media — use inline approach below */}
+      </div>
+
+      {/* Responsive layout via CSS classes */}
+      <div className="hidden lg:flex" style={{ position: 'relative', zIndex: 10, padding: '0 24px 32px', gap: 24, alignItems: 'flex-start' }}>
+        {/* Left column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: 300, flexShrink: 0, paddingTop: 8 }}>
           <PomodoroTimer />
           <TaskPanel />
         </div>
 
-        <div className="flex-1 flex flex-col items-center justify-center pt-4 min-h-[600px]">
-          <div className="mb-6 text-center">
-            <h1 className="text-3xl font-bold gradient-text mb-1" style={{ fontFamily: 'Cinzel, serif' }}>
+        {/* Center — Sanctuary */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', paddingTop: 16, minHeight: 580 }}>
+          <div style={{ textAlign: 'center', marginBottom: 24 }}>
+            <h1 className="gradient-text" style={{ fontSize: 28, fontWeight: 700, fontFamily: 'Cinzel, serif', lineHeight: 1 }}>
               The Aether Sanctuary
             </h1>
-            <p className="text-sm" style={{ color: 'rgba(255,255,255,0.35)' }}>
+            <p style={{ fontSize: 13, marginTop: 6, color: 'rgba(255,255,255,0.32)' }}>
               Click an archetype to activate its ritual
             </p>
           </div>
           <ArchetypeRing />
-          <div className="mt-8 flex flex-wrap justify-center gap-3 max-w-lg">
+          <div style={{ marginTop: 28, display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 10, maxWidth: 480 }}>
             {[
-              { label: '🔱 Trident — Royal Power', color: 'rgba(251,191,36,0.7)' },
-              { label: '🐉 Dragon — Guardian', color: 'rgba(129,140,248,0.7)' },
-              { label: '🕉️ Om — The Still Center', color: 'rgba(165,180,252,0.7)' },
+              { label: '🔱 Trident — Royal Power', color: 'rgba(251,191,36,0.65)' },
+              { label: '🐉 Dragon — The Guardian', color: 'rgba(129,140,248,0.65)' },
+              { label: '🕉️ Om — The Still Center', color: 'rgba(165,180,252,0.65)' },
             ].map(l => (
-              <div key={l.label} className="text-[10px] px-2.5 py-1 rounded-full"
-                style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)', color: l.color }}>
+              <div key={l.label} style={{
+                fontSize: 10, padding: '4px 12px', borderRadius: 99,
+                background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)',
+                color: l.color,
+              }}>
                 {l.label}
               </div>
             ))}
           </div>
         </div>
 
-        <div className="flex flex-col gap-4 w-72 flex-shrink-0 pt-2">
+        {/* Right column */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: 280, flexShrink: 0, paddingTop: 8 }}>
           <StatsPanel />
         </div>
       </div>
 
       {/* Mobile layout */}
-      <div className="lg:hidden relative z-10 px-4 pb-24">
+      <div className="lg:hidden" style={{ position: 'relative', zIndex: 10, padding: '8px 16px 96px' }}>
         {tab === 'sanctuary' && (
-          <div className="flex flex-col items-center gap-4">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold gradient-text" style={{ fontFamily: 'Cinzel, serif' }}>The Aether Sanctuary</h1>
-              <p className="text-xs mt-1" style={{ color: 'rgba(255,255,255,0.35)' }}>Tap an archetype to activate its ritual</p>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+            <div style={{ textAlign: 'center' }}>
+              <h1 className="gradient-text" style={{ fontSize: 22, fontWeight: 700, fontFamily: 'Cinzel, serif' }}>The Aether Sanctuary</h1>
+              <p style={{ fontSize: 11, marginTop: 5, color: 'rgba(255,255,255,0.32)' }}>Tap an archetype to activate its ritual</p>
             </div>
-            <div style={{ transform: 'scale(0.82)', transformOrigin: 'top center' }}>
+            <div style={{ transform: 'scale(0.8)', transformOrigin: 'top center' }}>
               <ArchetypeRing />
             </div>
           </div>
         )}
-        {tab === 'focus' && <div className="max-w-sm mx-auto"><PomodoroTimer /></div>}
-        {tab === 'quests' && <div className="max-w-sm mx-auto"><TaskPanel /></div>}
-        {tab === 'stats' && <div className="max-w-sm mx-auto"><StatsPanel /></div>}
+        {tab === 'focus' && (
+          <div style={{ maxWidth: 360, margin: '0 auto' }}>
+            <PomodoroTimer />
+          </div>
+        )}
+        {tab === 'quests' && (
+          <div style={{ maxWidth: 360, margin: '0 auto' }}>
+            <TaskPanel />
+          </div>
+        )}
+        {tab === 'stats' && (
+          <div style={{ maxWidth: 360, margin: '0 auto' }}>
+            <StatsPanel />
+          </div>
+        )}
       </div>
 
       <ArchetypeModal />

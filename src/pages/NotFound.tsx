@@ -1,23 +1,14 @@
-import { useLocation } from "react-router-dom";
-import { useEffect } from "react";
-
 export default function NotFound() {
-  const location = useLocation();
-
-  useEffect(() => {
-    console.error("404: Non-existent route:", location.pathname);
-  }, [location.pathname]);
-
   return (
-    <div className="min-h-screen flex items-center justify-center cosmic-bg">
-      <div className="text-center glass rounded-2xl p-12">
-        <div className="text-6xl mb-4">🪞</div>
-        <h1 className="text-4xl font-bold mb-2 gradient-text" style={{ fontFamily: 'Cinzel, serif' }}>404</h1>
-        <p className="text-lg mb-6" style={{ color: 'rgba(255,255,255,0.5)' }}>The Mirror reflects nothing here</p>
-        <a href="/" className="inline-block px-6 py-3 rounded-xl font-bold text-sm transition-all duration-200 btn-shimmer">
-          Return to the Sanctuary
-        </a>
-      </div>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', background: '#050810', color: '#e4e6f0', gap: 16 }}>
+      <div style={{ fontSize: 64 }}>🔱</div>
+      <h1 style={{ fontSize: 24, fontWeight: 700, fontFamily: 'Cinzel, serif', background: 'linear-gradient(135deg,#00e1ff,#8b5cf6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+        Portal Not Found
+      </h1>
+      <p style={{ fontSize: 14, color: 'rgba(255,255,255,0.4)' }}>This realm does not exist.</p>
+      <a href="/" style={{ marginTop: 8, padding: '10px 24px', borderRadius: 12, background: 'rgba(0,225,255,0.15)', color: '#00e1ff', border: '1px solid rgba(0,225,255,0.3)', fontWeight: 600, textDecoration: 'none', fontSize: 13 }}>
+        Return to Sanctuary
+      </a>
     </div>
   );
 }
